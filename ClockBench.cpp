@@ -15,7 +15,7 @@ using namespace std;
 #define ONE_BILLION  1000000000L
 
 // NOTE: if you change this value you prob also need to adjust later code that does "& 0xff" to use modulo arithmetic instead
-const int BUCKETS = 1024;         // how many samples to collect per iteration
+const int BUCKETS = 4096;         // how many samples to collect per iteration
 const int ITERS = 100;           // how many iterations to run
 double CPU_FREQ = 1;
 
@@ -98,12 +98,11 @@ int main(int argc, char** argv)
    if (argc > 1) {
       CPU_FREQ = strtod(argv[1], NULL);
    }
-
+   
    FILE* file = NULL;
    if (argc > 2) {
       file = fopen(argv[2], "w");
    }
-
 
    vector<long>    timestamp;
    timestamp.resize(BUCKETS);
@@ -112,6 +111,10 @@ int main(int argc, char** argv)
    printf("%s\t%7s\t%7s\t%7s\t%7s\t%7s\n", "samples", "min", "max", "avg", "median", "stdev");
 
 #if _POSIX_TIMERS > 0
+   #ifdef CLOCK_TAI
+   do_clock(CLOCK_TAI);
+   #endif
+   
    #ifdef CLOCK_REALTIME
    do_clock(CLOCK_REALTIME);
    #endif
